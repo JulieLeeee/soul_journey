@@ -1,0 +1,1723 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心靈旅程 線上命理占卜</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for Noto Sans TC (思源柔黑體替代) and Playfair Display -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif; /* 中文思源柔黑體 */
+            background-color: #F0D9D9; /* 柔霧粉 */
+            color: #333333; /* 霧黑 */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; /* Align content to top */
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            /* 柔和的背景漸變與星星點點 */
+            background-image: linear-gradient(to bottom right, #F0D9D9, #F5F5DC), /* 柔霧粉到米杏白漸變 */
+                              url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1.8" fill="rgba(167,217,224,0.7)"/><circle cx="15" cy="85" r="1" fill="rgba(196,193,217,0.6)"/><circle cx="75" cy="25" r="1.3" fill="rgba(167,217,224,0.8)"/><circle cx="30" cy="10" r="0.9" fill="rgba(196,193,217,0.5)"/><circle cx="90" cy="60" r="1.5" fill="rgba(167,217,224,0.9)"/></svg>');
+            background-size: cover, 100px 100px;
+            background-repeat: no-repeat, repeat;
+            background-attachment: fixed; /* 固定背景，滾動時星星不動 */
+        }
+
+        /* Navbar Styles */
+        nav {
+            background-color: rgba(245, 245, 220, 0.9); /* 米杏白半透明 */
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border-radius: 15px; /* Rounded corners for the navbar itself */
+        }
+
+        .nav-link {
+            color: #6B7280; /* 暖灰 */
+            font-weight: 500;
+            padding: 12px 20px;
+            border-radius: 10px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(167, 217, 224, 0.2); /* 湖水藍淺色背景 */
+            color: #4A5568; /* 深一點的暖灰 */
+        }
+
+        .nav-link.active {
+            background-color: #A7D9E0; /* 湖水藍 */
+            color: white;
+            font-weight: 600;
+        }
+
+        .hamburger-menu {
+            display: none; /* Hidden by default on desktop */
+            flex-direction: column;
+            justify-content: space-between;
+            width: 30px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .hamburger-menu span {
+            display: block;
+            width: 100%;
+            height: 2px;
+            background-color: #6B7280;
+            border-radius: 2px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .hamburger-menu.open span:nth-child(1) {
+            transform: translateY(9px) rotate(45deg);
+        }
+        .hamburger-menu.open span:nth-child(2) {
+            opacity: 0;
+        }
+        .hamburger-menu.open span:nth-child(3) {
+            transform: translateY(-9px) rotate(-45deg);
+        }
+
+        .mobile-menu {
+            background-color: rgba(245, 245, 220, 0.95);
+            backdrop-filter: blur(10px);
+            position: absolute;
+            top: 60px; /* Adjust based on navbar height */
+            right: 20px;
+            width: calc(100% - 40px); /* Full width minus padding */
+            max-width: 300px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            padding: 20px;
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            gap: 10px;
+            z-index: 999;
+        }
+
+        .mobile-menu .nav-link {
+            width: 100%;
+            text-align: center;
+        }
+
+        @media (max-width: 767px) {
+            .navbar-desktop-links {
+                display: none; /* Hide desktop links on mobile */
+            }
+            .hamburger-menu {
+                display: flex; /* Show hamburger on mobile */
+            }
+            /* Adjust body padding for mobile to prevent content being hidden behind navbar */
+            body {
+                padding-top: 80px; /* Give space for fixed navbar */
+            }
+        }
+
+
+        /* Page content styling */
+        .page-content {
+            width: 100%;
+            max-width: 900px; /* Wider for page content */
+            padding: 20px 0;
+            display: none; /* Hidden by default, shown by JS */
+            flex-direction: column; /* Ensures blocks stack correctly */
+            align-items: center; /* Centers content within the page */
+        }
+
+        .page-content.active {
+            display: flex; /* Show active page */
+        }
+
+        .intro-section {
+            background-color: rgba(245, 245, 220, 0.8); /* 米杏白半透明 */
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(196, 193, 217, 0.3); /* 靜謐紫邊框 */
+            border-radius: 25px; /* 更圓潤 */
+            padding: 35px;
+            margin-bottom: 40px;
+            max-width: 700px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            color: #6B7280; /* 暖灰 */
+            line-height: 1.8;
+            font-size: 1.1em;
+        }
+
+        .intro-section .illustration-placeholder {
+            font-size: 4em; /* Larger emoji for illustration */
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .card {
+            background-color: rgba(245, 245, 220, 0.9); /* 米杏白，更不透明 */
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(167, 217, 224, 0.4); /* 湖水藍邊框 */
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px;
+            max-width: 500px; /* 略寬 */
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+        }
+
+        .input-group label {
+            color: #6B7280; /* 暖灰標籤 */
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .input-group input, .input-group select {
+            background-color: rgba(255, 255, 255, 0.7); /* 更淺的背景 */
+            border: 1px solid rgba(196, 193, 217, 0.5); /* 靜謐紫邊框 */
+            color: #333333; /* 霧黑文字 */
+            padding: 12px 18px;
+            border-radius: 10px;
+            transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #A7D9E0; /* 湖水藍聚焦色 */
+            box-shadow: 0 0 0 3px rgba(167, 217, 224, 0.3); /* 湖水藍光暈 */
+        }
+
+        .btn-primary {
+            background-image: linear-gradient(to right, #F0D9D9, #FFB6C1); /* 柔霧粉到珊瑚粉漸變 */
+            color: #333333; /* 霧黑文字 */
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 6px 20px rgba(240, 217, 217, 0.4);
+            border: 1px solid rgba(255, 182, 193, 0.5); /* 珊瑚粉邊框 */
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(240, 217, 217, 0.6);
+            background-image: linear-gradient(to right, #FFB6C1, #F0D9D9);
+        }
+
+        .result-title {
+            font-size: 2em;
+            font-weight: 700;
+            color: #8A89A6; /* 靜謐紫標題 */
+            margin-bottom: 20px;
+            letter-spacing: 0.03em;
+        }
+
+        .result-content {
+            font-size: 1.1em;
+            line-height: 1.7;
+            color: #6B7280; /* 暖灰內容 */
+        }
+
+        #loading-indicator {
+            display: none;
+            margin-top: 30px;
+            color: #A7D9E0; /* 湖水藍 */
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+
+        /* Message Box Styling */
+        .message-box-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none; /* Hidden by default */
+        }
+
+        .message-box {
+            background-color: #F5F5DC; /* 米杏白 */
+            border: 1px solid rgba(167, 217, 224, 0.5);
+            border-radius: 15px;
+            padding: 35px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            color: #333333;
+        }
+
+        .message-box h3 {
+            margin-top: 0;
+            color: #FFB6C1; /* 珊瑚粉標題 */
+            font-size: 1.8em;
+            margin-bottom: 25px;
+        }
+
+        .message-box p {
+            margin-bottom: 30px;
+            line-height: 1.7;
+            color: #6B7280;
+        }
+
+        .message-box button {
+            background-image: linear-gradient(to right, #A7D9E0, #C4C1D9); /* 湖水藍到靜謐紫漸變 */
+            color: white;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 3px 10px rgba(167, 217, 224, 0.4);
+        }
+
+        .message-box button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(167, 217, 224, 0.6);
+        }
+
+        .reset-button {
+            background-color: #C4C1D9; /* 靜謐紫 */
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            margin-top: 30px;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .reset-button:hover {
+            background-color: #A7D9E0; /* 湖水藍 */
+        }
+
+        /* Chatbot specific styles */
+        .chatbot-container {
+            background-color: rgba(245, 245, 220, 0.9); /* 米杏白，與其他卡片一致 */
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(167, 217, 224, 0.4);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-radius: 20px;
+            padding: 25px; /* 略小於結果卡片，保持輕盈感 */
+            margin-top: 40px; /* 與結果卡片區隔 */
+            max-width: 600px; /* 較寬的聊天視窗 */
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            height: 500px; /* Fixed height */
+            overflow: hidden; /* Hide scrollbar */
+            position: relative; /* For scroll button positioning */
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto; /* Message scroll */
+            padding-right: 15px; /* Space for scrollbar */
+            margin-bottom: 20px;
+            /* Custom scrollbar styles */
+            scrollbar-width: thin;
+            scrollbar-color: #C4C1D9 #F5F5DC;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: #F5F5DC;
+            border-radius: 10px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background-color: #C4C1D9;
+            border-radius: 10px;
+            border: 2px solid #F5F5DC;
+        }
+
+        .message-bubble {
+            max-width: 80%;
+            padding: 12px 18px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            line-height: 1.6;
+            word-wrap: break-word; /* Prevent long text overflow */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+            white-space: pre-wrap; /* Preserve whitespace and line breaks from LLM */
+        }
+
+        .user-message {
+            background-color: #E6E6FA; /* Lavender, soft */
+            color: #333333;
+            margin-left: auto; /* Align right */
+            border: 1px solid rgba(196, 193, 217, 0.4);
+        }
+
+        .bot-message {
+            background-color: #F8F8F0; /* Light beige, softer */
+            color: #6B7280;
+            margin-right: auto; /* Align left */
+            border: 1px solid rgba(167, 217, 224, 0.4);
+        }
+
+        .chat-input-area {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .chat-input-area input {
+            flex-grow: 1;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(196, 193, 217, 0.6);
+            color: #333333;
+            padding: 12px 18px;
+            border-radius: 10px;
+        }
+
+        .chat-input-area input::placeholder {
+            color: #A0A0A0; /* Light gray placeholder text */
+        }
+
+        .chat-input-area button {
+            background-image: linear-gradient(to right, #A7D9E0, #C4C1D9); /* Aqua to Periwinkle gradient */
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 3px 10px rgba(167, 217, 224, 0.4);
+        }
+
+        .chat-input-area button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(167, 217, 224, 0.6);
+        }
+
+        .chatbot-loading {
+            text-align: center;
+            color: #A7D9E0;
+            margin-top: 10px;
+            font-size: 0.9em;
+            display: none;
+        }
+
+        /* About Section specific styles */
+        .about-section-block {
+            background-color: rgba(245, 245, 220, 0.8); /* 米杏白半透明 */
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(196, 193, 217, 0.3); /* 靜謐紫邊框 */
+            border-radius: 25px;
+            padding: 35px;
+            margin-bottom: 40px;
+            max-width: 800px; /* Wider about section */
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            color: #6B7280; /* 暖灰 */
+            line-height: 1.8;
+            font-size: 1.1em;
+            display: flex; /* Flexbox for layout */
+            flex-direction: column; /* Default to column for mobile */
+            align-items: center;
+            text-align: center;
+        }
+
+        .about-section-block .content-wrapper {
+            display: flex;
+            flex-direction: column; /* Default to column for mobile */
+            align-items: center;
+            gap: 20px; /* Space between image and text */
+            width: 100%;
+        }
+
+        .about-section-block .text-content {
+            flex: 1; /* Allow text to take available space */
+            text-align: left; /* Align text to left within its column */
+        }
+
+        .about-section-block .illustration-wrapper {
+            flex-shrink: 0; /* Don't shrink image */
+            width: 150px; /* Fixed width for illustration on desktop */
+            height: 150px; /* Fixed height for illustration on desktop */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(167, 217, 224, 0.2); /* 湖水藍淺色背景 */
+            border-radius: 50%; /* 圓形背景 */
+        }
+
+        .about-section-block .illustration-wrapper .about-illustration {
+            font-size: 5em; /* Larger emoji */
+        }
+
+        @media (min-width: 768px) { /* Medium screens and up (desktop) */
+            .about-section-block .content-wrapper {
+                flex-direction: row; /* Row for desktop */
+                text-align: left;
+            }
+            .about-section-block .text-content {
+                padding-right: 30px; /* Add some padding on the right for text */
+            }
+            .about-section-block .illustration-wrapper {
+                width: 200px; /* Larger image on desktop */
+                height: 200px;
+            }
+        }
+
+        /* Thematic Fortune Section Styles */
+        /* Removed display: none from here, relying on Tailwind's hidden class */
+        .thematic-fortune-section {
+            background-color: rgba(245, 245, 220, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(167, 217, 224, 0.4);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 40px;
+            max-width: 800px;
+            width: 100%;
+            flex-direction: column; /* Always flex column for internal layout */
+            align-items: center;
+            text-align: center;
+        }
+
+        .thematic-fortune-tabs {
+            display: flex;
+            flex-wrap: wrap; /* Allow tabs to wrap on smaller screens */
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+
+        .thematic-fortune-tab-button {
+            background-color: rgba(196, 193, 217, 0.6); /* 靜謐紫淺色 */
+            color: #333333;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .thematic-fortune-tab-button:hover {
+            background-color: #A7D9E0; /* 湖水藍 */
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(167, 217, 224, 0.4);
+        }
+
+        .thematic-fortune-tab-button.active {
+            background-color: #A7D9E0; /* 湖水藍 */
+            color: white;
+            box-shadow: 0 4px 12px rgba(167, 217, 224, 0.6);
+        }
+
+        .thematic-fortune-content {
+            display: none; /* Hidden by default */
+            width: 100%;
+            text-align: left;
+            line-height: 1.7;
+            color: #6B7280;
+            padding: 15px 0;
+            white-space: pre-wrap; /* Preserve whitespace and line breaks from LLM */
+        }
+
+        .thematic-fortune-content.active {
+            display: block;
+        }
+
+        .thematic-loading {
+            text-align: center;
+            color: #A7D9E0;
+            margin-top: 20px;
+            font-size: 1.1em;
+            display: none;
+        }
+
+        /* New style for centered intro text */
+        .thematic-intro-text {
+            text-align: center;
+            font-size: 1.1em;
+            line-height: 1.7;
+            color: #6B7280;
+            margin-bottom: 20px; /* Space between text and buttons */
+        }
+        /* Styles for the new sections within "About" page */
+        .about-section-block {
+            background-color: rgba(245, 245, 220, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(196, 193, 217, 0.3);
+            border-radius: 25px;
+            padding: 35px;
+            margin-bottom: 40px; /* Spacing between blocks */
+            max-width: 700px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: left; /* Align text left within these blocks */
+            color: #6B7280;
+            line-height: 1.8;
+            font-size: 1.1em;
+        }
+        .about-section-block h2 {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #8A89A6;
+            margin-bottom: 15px;
+            text-align: center; /* Center section titles */
+        }
+        .about-section-block ul {
+            list-style-type: disc; /* For bullet points */
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+        .about-section-block ul li {
+            margin-bottom: 8px;
+        }
+        /* New style for navigation links within about sections */
+        .about-section-nav-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-image: linear-gradient(to right, #A7D9E0, #C4C1D9); /* 湖水藍到靜謐紫漸變 */
+            color: white;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 3px 10px rgba(167, 217, 224, 0.4);
+        }
+        .about-section-nav-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(167, 217, 224, 0.6);
+        }
+
+        /* Card display container for side-by-side layout */
+        .magic-card-container {
+            display: flex; /* 使用 Flexbox 讓卡片並列 */
+            justify-content: center; /* 居中對齊 */
+            align-items: center;
+            gap: 20px; /* 兩張卡片之間的間距 */
+            width: auto; /* 讓內容決定寬度 */
+            height: 350px; /* 維持卡片高度 */
+            margin: 30px auto;
+        }
+
+        .card-display {
+            width: 250px; /* 固定寬度 */
+            height: 350px; /* 固定高度 */
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+            font-size: 1.1em;
+            line-height: 1.6;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out; /* 平滑過渡效果 */
+        }
+
+        .initial-card-back {
+            background-image: linear-gradient(to bottom right, #C4C1D9, #A7D9E0); /* 靜謐紫到湖水藍漸變 */
+            color: white;
+            font-size: 3em;
+            font-weight: bold;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            /* 初始狀態透明度為 1，表示可見 */
+            opacity: 1;
+        }
+
+        .initial-card-back::before {
+            content: '✨'; /* Star emoji */
+            position: absolute;
+            font-size: 4em;
+            opacity: 0.3;
+            animation: sparkle 3s infinite ease-in-out;
+        }
+
+        @keyframes sparkle {
+            0% { transform: scale(1) rotate(0deg); opacity: 0.3; }
+            50% { transform: scale(1.1) rotate(5deg); opacity: 0.5; }
+            100% { transform: scale(1) rotate(0deg); opacity: 0.3; }
+        }
+
+        .revealed-card-front {
+            background-color: #F5F5DC; /* 米杏白 */
+            color: #6B7280; /* 暖灰 */
+            border: 2px solid rgba(167, 217, 224, 0.6); /* 湖水藍邊框 */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around; /* 垂直分佈內容 */
+            align-items: center;
+            opacity: 0; /* 初始隱藏 */
+            transform: translateX(20px); /* 初始位置稍微向右偏移，準備滑入 */
+            pointer-events: none; /* 隱藏時不響應事件 */
+        }
+
+        .revealed-card-front.active {
+            opacity: 1; /* 顯示時完全不透明 */
+            transform: translateX(0); /* 滑入到最終位置 */
+            pointer-events: auto; /* 顯示時響應事件 */
+        }
+
+        .card-front h3 {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #8A89A6; /* 靜謐紫 */
+            margin-bottom: 10px;
+        }
+
+        .card-front p {
+            font-size: 0.95em;
+            margin-bottom: 8px;
+        }
+
+        .card-front .keywords {
+            color: #A7D9E0; /* 湖水藍 */
+            font-weight: 500;
+        }
+
+        .card-front .guidance {
+            font-style: italic;
+            color: #333333;
+            margin-top: 10px;
+        }
+
+        /* Button container below the card */
+        .card-buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px; /* Space between buttons */
+            margin-top: 30px; /* Space from the card */
+        }
+
+        .draw-card-button, .reset-card-button {
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            white-space: nowrap; /* Prevent text wrapping */
+        }
+
+        .draw-card-button {
+            background-image: linear-gradient(to right, #FFB6C1, #F0D9D9); /* 珊瑚粉到柔霧粉漸變 */
+            color: #333333;
+            display: inline-block; /* 預設顯示 */
+        }
+        .draw-card-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 182, 193, 0.6);
+        }
+        .draw-card-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background-image: linear-gradient(to right, #ccc, #bbb);
+            box-shadow: none;
+        }
+
+        .reset-card-button {
+            background-image: linear-gradient(to right, #C4C1D9, #A7D9E0); /* 靜謐紫到湖水藍漸變 */
+            color: white;
+            display: none; /* 預設隱藏 */
+        }
+        .reset-card-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(196, 193, 217, 0.6);
+        }
+        .reset-card-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background-image: linear-gradient(to right, #ccc, #bbb);
+            box-shadow: none;
+        }
+
+    </style>
+</head>
+<body class="flex flex-col items-center min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="w-full fixed top-0 left-0 z-50 p-4 flex justify-between items-center px-6">
+        <a href="#about" class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#8DA3B9] to-[#A7B9C9] drop-shadow-lg cursor-pointer" id="siteLogo">
+            心靈旅程
+        </a>
+
+        <!-- Desktop Navigation Links -->
+        <div class="hidden md:flex space-x-4 navbar-desktop-links">
+            <a href="#about" class="nav-link" data-page="about">關於心靈旅程 💘</a>
+            <a href="#start" class="nav-link" data-page="start">我的心靈旅程 💞</a>
+            <a href="#magicStone" class="nav-link" data-page="magicStone">心靈魔法石 💖</a>
+        </div>
+
+        <!-- Hamburger Menu for Mobile -->
+        <div class="md:hidden hamburger-menu" id="hamburgerMenu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="#about" class="nav-link" data-page="about">關於心靈旅程 💘</a>
+            <a href="#start" class="nav-link" data-page="start">我的心靈旅程 💞</a>
+            <a href="#magicStone" class="nav-link" data-page="magicStone">心靈魔法石 💖</a>
+        </div>
+    </nav>
+
+    <!-- Page Content Container -->
+    <div id="pageContainer" class="w-full flex flex-col items-center pt-24 pb-8"> <!-- Adjust pt for fixed navbar -->
+
+        <!-- Page 1: 關於心靈旅程 (About) -->
+        <div id="aboutPage" class="page-content active">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#8DA3B9] to-[#A7B9C9] mb-8 drop-shadow-lg">
+                關於心靈旅程
+            </h1>
+            <p class="text-center text-xl text-gray-600 mb-10">每段旅程，都從認識自己開始。</p>
+
+            <!-- 第一區塊：網站總體介紹 -->
+            <div class="about-section-block">
+                <h2 class="text-center">🌿 關於心靈這趟旅程</h2>
+                <p class="mb-4">在人生每一段停下腳步的時刻，你是否也渴望，一個靜靜傾聽你的地方？</p>
+                <p class="mb-4">《心靈旅程》是一個溫柔陪伴的命理網站，透過簡化的紫微斗數與生命靈數分析，幫助你理解自己的個性節奏、情感動態與內在力量。我們相信：算命不是預言，而是通往自我理解的起點。</p>
+                <p>無論你正在尋找方向、走過混亂，或只是想更靠近內在的聲音，都可以從這裡，開始一段屬於自己的心靈旅程。</p>
+            </div>
+
+            <!-- 第二區塊：「我的心靈旅程」介紹 -->
+            <div class="about-section-block">
+                <h2 class="text-center">🚪「我的心靈旅程」介紹</h2>
+                <p class="mb-4">每一段心靈旅程，都從一個真實的你開始。</p>
+                <p class="mb-4">在「我的心靈旅程」區域，你可以：</p>
+                <ul class="list-disc pl-5">
+                    <li>✍️ 輸入你的基本資料（生日、出生時間、性別），讓我們為你生成專屬命盤</li>
+                    <li>🔢 查看你的生命靈數組合，了解你天生的思考方式與能量特質</li>
+                    <li>🌓 閱讀簡化版的紫微斗數命盤，從命宮與主星看見你的核心狀態與潛在走向</li>
+                    <li>🤝 若你對命盤內容感到不懂或困惑，可以進一步由你的心靈陪伴者星星提供個人化解說與陪伴</li>
+                </ul>
+                <p class="mt-4">這個空間，是你與自己深度對話的起點。</p>
+                <div class="text-center">
+                    <a href="#start" class="about-section-nav-link" data-page="start">前往我的心靈旅程 💞</a>
+                </div>
+            </div>
+
+            <!-- 第三區塊：「心靈魔法石」介紹 -->
+            <div class="about-section-block">
+                <h2 class="text-center">🔮「心靈魔法石」介紹</h2>
+                <p class="mb-4">當命盤鋪陳完畢，你將收到來自心靈的魔法石回應。</p>
+                <p class="mb-4">「心靈魔法石」是一組主題式的命理解讀工具，根據你的命盤自動分析，回應你當下最關心的議題，包括：</p>
+                <ul class="list-disc pl-5">
+                    <li>❤️ 感情運勢：近期情感能量變化、桃花運與內在互動狀態</li>
+                    <li>💼 事業／學業發展：適合的行動節奏、內在動力與潛在突破方向</li>
+                    <li>🏡 家庭關係：你在家庭中的角色與近期可能的情感起伏</li>
+                    <li>🌟 整體運勢：綜合分析近期能量波動與建議的心靈調整方式</li>
+                </ul>
+                <p class="mt-4">點開每一顆魔法石，就是一次與自己更靠近的對話。</p>
+                <div class="text-center">
+                    <a href="#magicStone" class="about-section-nav-link" data-page="magicStone">探索心靈魔法石 💖</a>
+                </div>
+            </div>
+
+            <!-- 新增區塊：「心靈旅程的行囊」功能區 -->
+            <div class="about-section-block">
+                <h2 class="text-center">💝 心靈魔法卡</h2>
+                <!-- 新增的說明文字 -->
+                <p class="text-center text-base text-gray-600 mb-4 leading-relaxed">
+                    如果你還沒準備好要開啟心靈旅程的話，可以先嘗試心靈魔法卡。<br>
+                    不需填寫資料，也不用想問題，只要靜下心來，抽一張卡，接收此刻屬於你的訊息。<br>
+                    每張卡都是溫柔的提醒，帶你重新連結內在，找到今天的方向與支持。
+                </p>
+                <p class="mb-6 text-center">抽一張心靈魔法卡，讓今日指引為你點亮方向。</p>
+
+                <div class="magic-card-container">
+                    <!-- 初始卡片顯示區 -->
+                    <div id="initialCardDisplay" class="card-display initial-card-back">
+                        點擊翻牌 ✨
+                    </div>
+                    <!-- 翻開後卡片內容顯示區 -->
+                    <div id="revealedCardDisplay" class="card-display revealed-card-front">
+                        <h3 id="cardName"></h3>
+                        <p class="keywords" id="cardKeywords"></p>
+                        <p class="guidance" id="cardGuidance"></p>
+                    </div>
+                </div>
+                <div class="card-buttons-container">
+                    <button class="draw-card-button" id="drawCardButton">抽一張卡 🃏</button>
+                    <button class="reset-card-button" id="resetCardButton">重新抽牌 🔄</button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Page 2: 我的心靈旅程 (Start) -->
+        <div id="startPage" class="page-content">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#8DA3B9] to-[#A7B9C9] mb-8 drop-shadow-lg">
+                我的心靈旅程
+            </h1>
+            <p class="text-center text-xl text-gray-600 mb-10">請填寫你的心靈問卷，探索內在宇宙。</p>
+
+            <div class="w-full max-w-2xl rounded-xl shadow-2xl p-6 md:p-8 mb-10 card">
+                <form id="fortuneForm" class="space-y-8">
+                    <div class="input-group">
+                        <label for="name" class="block text-sm font-medium mb-2">姓名 (可選)</label>
+                        <input type="text" id="name" name="name" placeholder="寫下你的名字" class="w-full">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="birthDate" class="block text-sm font-medium mb-2">出生日期 (YYYY-MM-DD) <span class="text-red-400">*</span></label>
+                        <input type="date" id="birthDate" name="birthDate" required class="w-full">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="birthTime" class="block text-sm font-medium mb-2">出生時間 (HH:mm) <span class="text-red-400">*</span></label>
+                        <input type="time" id="birthTime" name="birthTime" required class="w-full">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="gender" class="block text-sm font-medium mb-2">性別 <span class="text-red-400">*</span></label>
+                        <select id="gender" name="gender" required class="w-full">
+                            <option value="">請選擇</option>
+                            <option value="male">男</option>
+                            <option value="female">女</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-primary w-full cursor-pointer">
+                        開啟心靈旅程 💌
+                    </button>
+                </form>
+            </div>
+
+            <div id="loading-indicator">
+                正在為您整理信件，請稍候...
+            </div>
+
+            <div id="results" class="flex flex-col md:flex-row justify-center items-center w-full max-w-5xl mt-10">
+                <!-- Numerology Card -->
+                <div id="numerologyCard" class="card hidden">
+                    <h2 class="result-title">生命靈數分析</h2>
+                    <p class="result-content" id="numerologyResult"></p>
+                </div>
+
+                <!-- Zi Wei Dou Shu Card -->
+                <div id="ziweiCard" class="card hidden">
+                    <h2 class="result-title">紫微斗數簡化排盤</h2>
+                    <p class="result-content" id="ziweiResult"></p>
+                </div>
+            </div>
+
+            <!-- Chatbot Section -->
+            <div id="chatbotSection" class="chatbot-container hidden">
+                <h2 class="result-title mb-4">與星星對話 ✨</h2>
+                <div id="chatMessages" class="chat-messages">
+                    <!-- Chat messages will be appended here -->
+                    <!-- Initial message will be set dynamically by JS -->
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="chatInput" placeholder="問問星星，說說你的想法..." class="w-full">
+                    <button id="sendMessageBtn">問問星星 🪐</button>
+                </div>
+                <div id="chatbotLoading" class="chatbot-loading">
+                    星星正在思考中...
+                </div>
+            </div>
+
+            <button id="resetButton" class="reset-button hidden cursor-pointer">
+                再寫一次信
+            </button>
+        </div>
+
+        <!-- Page 3: 心靈魔法石 (Magic Stone) -->
+        <div id="magicStonePage" class="page-content">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#8DA3B9] to-[#A7B9C9] mb-8 drop-shadow-lg">
+                心靈魔法石 ✨
+            </h1>
+            <!-- Intro text for Magic Stone page, always displayed -->
+            <p class="thematic-intro-text">
+                每顆魔法石，都是你命盤中的一面鏡子。<br>
+                在這裡，你將看到來自感情、事業、家庭與運勢的訊息，它們不是命運的預言，而是你內在能量的回音。<br>
+                點擊每一個主題，傾聽你靈魂此刻最想說的話。
+            </p>
+
+            <!-- Thematic Fortune Section -->
+            <div id="thematicFortuneSection" class="thematic-fortune-section">
+                <h2 class="result-title mb-6">主題運勢解析 ✨</h2>
+                <div class="thematic-fortune-tabs">
+                    <button class="thematic-fortune-tab-button active" data-theme="love">感情運勢 💖</button>
+                    <button class="thematic-fortune-tab-button" data-theme="career">事業／學業運勢 💼</button>
+                    <button class="thematic-fortune-tab-button" data-theme="family">家庭關係 🏡</button>
+                    <button class="thematic-fortune-tab-button" data-theme="overall">綜合運勢 (週／月) 🗓️</button>
+                </div>
+
+                <div id="thematicLoading" class="thematic-loading">
+                    正在為您解析主題運勢...
+                </div>
+
+                <!-- Thematic fortune content divs with initial placeholder text -->
+                <div id="loveFortuneContent" class="thematic-fortune-content active">
+                    <p class="text-center">請先回到「我的心靈旅程」頁面填寫您的命盤資料，即可查看你的運勢。</p>
+                </div>
+                <div id="careerFortuneContent" class="thematic-fortune-content">
+                    <p class="text-center">請先回到「我的心靈旅程」頁面填寫您的命盤資料，即可查看你的運勢。</p>
+                </div>
+                <div id="familyFortuneContent" class="thematic-fortune-content">
+                    <p class="text-center">請先回到「我的心靈旅程」頁面填寫您的命盤資料，即可查看你的運勢。</p>
+                </div>
+                <div id="overallFortuneContent" class="thematic-fortune-content">
+                    <p class="text-center">請先回到「我的心靈旅程」頁面填寫您的命盤資料，即可查看你的運勢。</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Custom Message Box -->
+    <div id="messageBoxOverlay" class="message-box-overlay">
+        <div class="message-box">
+            <h3 id="messageBoxTitle"></h3>
+            <p id="messageBoxContent"></p>
+            <button id="messageBoxClose">確定</button>
+        </div>
+    </div>
+
+    <script>
+        // Store user fortune data globally after calculation
+        let userFortuneData = {};
+        let thematicFortuneCache = {}; // Cache for thematic fortunes
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('fortuneForm');
+            const numerologyCard = document.getElementById('numerologyCard');
+            const ziweiCard = document.getElementById('ziweiCard');
+            const numerologyResult = document.getElementById('numerologyResult');
+            const ziweiResult = document.getElementById('ziweiResult');
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const resetButton = document.getElementById('resetButton');
+            const resultsSection = document.getElementById('results');
+            const chatbotSection = document.getElementById('chatbotSection');
+            const chatMessagesDiv = document.getElementById('chatMessages');
+            const chatInput = document.getElementById('chatInput');
+            const sendMessageBtn = document.getElementById('sendMessageBtn');
+            const chatbotLoading = document.getElementById('chatbotLoading');
+            const nameInput = document.getElementById('name'); // Get the name input field
+
+            const thematicFortuneSection = document.getElementById('thematicFortuneSection');
+            const thematicFortuneTabButtons = document.querySelectorAll('.thematic-fortune-tab-button');
+            const thematicFortuneContents = document.querySelectorAll('.thematic-fortune-content');
+            const thematicLoading = document.getElementById('thematicLoading');
+            // Thematic intro text is now a static part of the HTML, no need to get it via JS for display toggling.
+
+            const messageBoxOverlay = document.getElementById('messageBoxOverlay');
+            const messageBoxTitle = document.getElementById('messageBoxTitle');
+            const messageBoxContent = document.getElementById('messageBoxContent');
+            const messageBoxClose = document.getElementById('messageBoxClose');
+
+            // --- Card Logic for "心靈旅程的行囊" ---
+            const initialCardDisplay = document.getElementById('initialCardDisplay');
+            const revealedCardDisplay = document.getElementById('revealedCardDisplay');
+            const drawCardButton = document.getElementById('drawCardButton');
+            const resetCardButton = document.getElementById('resetCardButton');
+            const cardName = document.getElementById('cardName');
+            const cardKeywords = document.getElementById('cardKeywords');
+            const cardGuidance = document.getElementById('cardGuidance');
+
+            const magicCardsData = [
+                { name: "覺察", keywords: "靜心、注意細節、內在觀照", guidance: "停下來觀察，不急著回應，你會更懂得自己。" },
+                { name: "信任", keywords: "放下控制、與宇宙合作", guidance: "你不需要知道所有答案，讓未知也成為旅程的一部分。" },
+                { name: "行動", keywords: "主動出擊、實踐想法", guidance: "哪怕只是小小的一步，也比停在原地更靠近未來的你。" },
+                { name: "勇氣", keywords: "突破恐懼、真實面對", guidance: "你不是不害怕，而是願意帶著恐懼前進，這就是勇敢。" },
+                { name: "療癒", keywords: "釋放、內在修復、自我照顧", guidance: "今天請對自己溫柔一點，你已經做得很好了。" },
+                { name: "放下", keywords: "斷捨離、結束、釋懷", guidance: "有些重量，是你可以選擇不再背負的。" },
+                { name: "轉化", keywords: "重塑、變化中的祝福", guidance: "混亂不是終點，而是蛻變的開端。" },
+                { name: "愛", keywords: "溫柔、包容、愛自己", guidance: "將愛灑向你在乎的人，也別忘了留一點給自己。" },
+                { name: "耐心", keywords: "等待時機、穩定心念", guidance: "不著急，重要的事情正在默默成形中。" },
+                { name: "連結", keywords: "人際關係、敞開心房", guidance: "你不必獨自承受，讓連結成為你的力量。" },
+                { name: "接納", keywords: "允許真實、擁抱不完美", guidance: "不是改變自己才值得被愛，而是你本來就夠好。" },
+                { name: "清理", keywords: "釐清雜訊、情緒釋放", guidance: "今天很適合打掃，不只空間，還有你的內心。" },
+                { name: "界線", keywords: "保護自己、說不的勇氣", guidance: "溫柔不是無限包容，請記得守住自己的光。" },
+                { name: "直覺", keywords: "內在聲音、靈感指引", guidance: "相信那個沒來由卻一再浮現的感覺，它知道你該往哪裡走。" },
+                { name: "祝福", keywords: "能量流動、心念擴展", guidance: "今天的你也可以成為別人的光，傳遞一點祝福吧。" },
+                { name: "感謝", keywords: "豐盛意識、生活的禮物", guidance: "注意那些微小卻溫柔的好事，它們正在支持你。" },
+                { name: "誠實", keywords: "真實面對、與自己對話", guidance: "不需要偽裝，你的真心值得被看見。" },
+                { name: "可能", keywords: "選擇權、未來的打開", guidance: "請記住，今天不等於永遠，一切都還有可能。" }
+            ];
+
+            function drawMagicCard() {
+                // 如果已經顯示內容卡片，則先重置
+                if (revealedCardDisplay.classList.contains('active')) {
+                    resetMagicCard();
+                    setTimeout(() => {
+                        performDrawLogic();
+                    }, 500); // 延遲以等待重置動畫完成
+                } else {
+                    performDrawLogic();
+                }
+            }
+
+            function performDrawLogic() {
+                const randomIndex = Math.floor(Math.random() * magicCardsData.length);
+                const selected = magicCardsData[randomIndex];
+
+                cardName.textContent = selected.name;
+                cardKeywords.textContent = `🔑 關鍵語：${selected.keywords}`;
+                cardGuidance.textContent = `✨ 今日指引：${selected.guidance}`;
+
+                // 讓初始卡片變暗，並移除點擊事件
+                initialCardDisplay.style.opacity = '0.5';
+                initialCardDisplay.style.cursor = 'default';
+                initialCardDisplay.removeEventListener('click', drawMagicCard); // 移除事件監聽器
+
+                // 顯示內容卡片並觸發動畫
+                revealedCardDisplay.classList.remove('hidden');
+                void revealedCardDisplay.offsetWidth; // 強制重繪以確保動畫觸發
+                revealedCardDisplay.classList.add('active');
+
+                // 隱藏「抽一張卡」按鈕，顯示「重新抽牌」按鈕
+                drawCardButton.style.display = 'none';
+                resetCardButton.style.display = 'inline-block';
+            }
+
+            function resetMagicCard() {
+                // 隱藏內容卡片並觸發動畫
+                revealedCardDisplay.classList.remove('active');
+                revealedCardDisplay.classList.add('hidden'); // 確保在動畫結束後隱藏
+
+                // 重置初始卡片狀態
+                initialCardDisplay.style.opacity = '1';
+                initialCardDisplay.style.cursor = 'pointer';
+                initialCardDisplay.addEventListener('click', drawMagicCard); // 重新添加事件監聽器
+
+                // 顯示「抽一張卡」按鈕，隱藏「重新抽牌」按鈕
+                drawCardButton.style.display = 'inline-block';
+                resetCardButton.style.display = 'none';
+
+                // 在動畫完成後清除內容
+                setTimeout(() => {
+                    cardName.textContent = '';
+                    cardKeywords.textContent = '';
+                    cardGuidance.textContent = '';
+                }, 500); // 配合 revealedCardDisplay 的 transition duration
+            }
+
+            // 綁定按鈕和卡片點擊事件
+            drawCardButton.addEventListener('click', drawMagicCard);
+            resetCardButton.addEventListener('click', resetMagicCard);
+            initialCardDisplay.addEventListener('click', drawMagicCard);
+
+
+            // --- Page Navigation Logic ---
+            const aboutPage = document.getElementById('aboutPage');
+            const startPage = document.getElementById('startPage');
+            const magicStonePage = document.getElementById('magicStonePage'); // New page element
+            const navLinks = document.querySelectorAll('.nav-link');
+            const siteLogo = document.getElementById('siteLogo');
+            const hamburgerMenu = document.getElementById('hamburgerMenu');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const aboutSectionNavLinks = document.querySelectorAll('.about-section-nav-link'); // Select new links
+
+            // Add event listeners for the new about section navigation links
+            aboutSectionNavLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const pageId = link.dataset.page;
+                    history.pushState(null, '', `#${pageId}`); // Update URL hash
+                    showPage(pageId);
+                });
+            });
+
+
+            function showPage(pageId) {
+                console.log(`切換頁面至: ${pageId}`); // Debug log
+                // Hide all pages
+                document.querySelectorAll('.page-content').forEach(page => {
+                    page.classList.remove('active');
+                    page.style.display = 'none'; // Ensure it's hidden
+                });
+                // Show the target page
+                const targetPage = document.getElementById(pageId + 'Page');
+                if (targetPage) {
+                    targetPage.classList.add('active');
+                    targetPage.style.display = 'flex'; // Use flex for page content
+                    console.log(`頁面 ${pageId} 已顯示。`); // Debug log
+
+                    // Special handling for magicStonePage to ensure thematic section is visible
+                    if (pageId === 'magicStone') {
+                        thematicFortuneSection.style.display = 'flex'; // Explicitly show thematic section
+                        // Manage buttons and content visibility based on userFortuneData
+                        if (Object.keys(userFortuneData).length === 0) { // Check if userFortuneData is empty
+                            thematicFortuneTabButtons.forEach(btn => btn.style.display = 'none'); // Hide buttons
+                            thematicFortuneContents.forEach(contentDiv => {
+                                // Reset content to placeholder and hide all content divs initially
+                                contentDiv.innerHTML = '<p class="text-center">請先回到「我的心靈旅程」頁面填寫您的命盤資料，即可查看你的運勢。</p>'; // Ensure placeholder is centered
+                                contentDiv.style.display = 'none';
+                            });
+                            // Show only the first content div with its placeholder
+                            document.getElementById('loveFortuneContent').style.display = 'block';
+                            document.getElementById('loveFortuneContent').classList.add('active'); // Ensure first tab is active
+                            thematicFortuneTabButtons[0].classList.add('active'); // Ensure first button is active
+                        } else {
+                            thematicFortuneTabButtons.forEach(btn => btn.style.display = 'block'); // Show buttons
+                            // Re-trigger the active tab to load its content (from cache or API)
+                            const currentActiveTab = document.querySelector('.thematic-fortune-tab-button.active');
+                            if (currentActiveTab) {
+                                showThematicFortune(currentActiveTab.dataset.theme);
+                            } else {
+                                showThematicFortune('love'); // Default to love if no active tab
+                            }
+                        }
+                        console.log("心靈魔法石頁面顯示時，主題運勢區塊也已顯示。");
+                    } else {
+                        thematicFortuneSection.style.display = 'none'; // Hide if not magicStonePage
+                    }
+
+                } else {
+                    console.warn(`找不到 ID 為 ${pageId}Page 的頁面。`); // Debug log
+                }
+
+                // Update active link in navbar
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.dataset.page === pageId) {
+                        link.classList.add('active');
+                    }
+                });
+
+                // Close mobile menu if open
+                hamburgerMenu.classList.remove('open');
+                mobileMenu.style.display = 'none';
+
+                // Scroll to top of the new page content
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            // Handle navigation clicks
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const pageId = link.dataset.page;
+                    history.pushState(null, '', `#${pageId}`); // Update URL hash
+                    showPage(pageId);
+                });
+            });
+
+            // Handle logo click (default to about page)
+            siteLogo.addEventListener('click', (e) => {
+                e.preventDefault();
+                history.pushState(null, '', '#about');
+                showPage('about');
+            });
+
+            // Handle hamburger menu click
+            hamburgerMenu.addEventListener('click', () => {
+                hamburgerMenu.classList.toggle('open');
+                if (mobileMenu.style.display === 'flex') {
+                    mobileMenu.style.display = 'none';
+                } else {
+                    mobileMenu.style.display = 'flex';
+                }
+            });
+
+            // Listen for hash changes (back/forward browser buttons)
+            window.addEventListener('hashchange', () => {
+                const pageId = window.location.hash.substring(1) || 'about';
+                showPage(pageId);
+            });
+
+            // Initial page load based on URL hash or default to 'about'
+            const initialPageId = window.location.hash.substring(1) || 'about';
+            showPage(initialPageId);
+
+
+            // Function to show custom message box
+            function showMessageBox(title, message) {
+                messageBoxTitle.textContent = title;
+                messageBoxContent.textContent = message;
+                messageBoxOverlay.style.display = 'flex';
+            }
+
+            // Close message box
+            messageBoxClose.addEventListener('click', () => {
+                messageBoxOverlay.style.display = 'none';
+            });
+
+            // Function to generate the initial greeting message
+            function generateInitialGreeting(userName) {
+                let greeting = "你好呀";
+                if (userName) {
+                    greeting += `，${userName}`;
+                }
+                greeting += "，很高興認識你，我是你的陪伴型機器人✨星星。最近過得好嗎？無論是發生快樂或是悲傷的事情都可以跟我分享，我會給你一些建議，請不要忘記「你不是一個人」，我會陪著你一起度過。";
+                return greeting;
+            }
+
+            // Initialize chat messages when the page loads (or when chatbot is shown for the first time)
+            function initializeChatbotGreeting() {
+                const userName = nameInput.value.trim();
+                const initialGreeting = generateInitialGreeting(userName);
+                chatMessagesDiv.innerHTML = `<div class="bot-message message-bubble">${initialGreeting}</div>`;
+            }
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const birthDateStr = document.getElementById('birthDate').value;
+                const birthTimeStr = document.getElementById('birthTime').value;
+                const gender = document.getElementById('gender').value;
+                const name = nameInput.value.trim(); // Get name here for use in greeting
+
+                if (!birthDateStr || !birthTimeStr || !gender) {
+                    showMessageBox('資料不完整', '請填寫所有必填欄位 (出生日期、出生時間、性別)。');
+                    return;
+                }
+
+                loadingIndicator.style.display = 'block';
+                numerologyCard.classList.add('hidden');
+                ziweiCard.classList.add('hidden');
+                resetButton.classList.add('hidden'); // Hide reset button during calculation
+                chatbotSection.classList.add('hidden'); // Hide chatbot during new calculation
+
+                try {
+                    // --- 生命靈數計算 ---
+                    const [year, month, day] = birthDateStr.split('-').map(Number);
+                    const lifePathNumber = calculateLifePathNumber(year, month, day);
+                    const numerologyDescription = getNumerologyDescription(lifePathNumber);
+                    numerologyResult.innerHTML = `
+                        <p class="mb-2">你的主命數是：<span class="text-[#FFB6C1] text-2xl font-bold">${lifePathNumber}</span></p>
+                        <p>${numerologyDescription}</p>
+                    `;
+                    numerologyCard.classList.remove('hidden');
+
+                    // --- 紫微斗數簡化排盤 ---
+                    const [hour, minute] = birthTimeStr.split(':').map(Number);
+                    const ziweiAnalysis = getSimplifiedZiweiAnalysis(year, month, day, hour, gender);
+                    ziweiResult.innerHTML = `
+                        <p class="mb-2">你的命宮：<span class="text-[#FFB6C1] text-xl font-bold">${ziweiAnalysis.lifePalace}</span></p>
+                        <p class="mb-2">你的主星：<span class="text-[#FFB6C1] text-xl font-bold">${ziweiAnalysis.mainStar}</span></p>
+                        <p>${ziweiAnalysis.description}</p>
+                    `;
+                    ziweiCard.classList.remove('hidden');
+
+                    // Store fortune data for chatbot and thematic fortunes
+                    userFortuneData = {
+                        name: name,
+                        birthDate: birthDateStr,
+                        birthTime: birthTimeStr,
+                        gender: gender,
+                        lifepath_number: lifePathNumber,
+                        lifepath_description: numerologyDescription,
+                        ziwei_main_star: ziweiAnalysis.mainStar,
+                        ziwei_minggong: ziweiAnalysis.lifePalace,
+                        ziwei_description: ziweiAnalysis.description
+                    };
+
+                    thematicFortuneCache = {}; // Clear thematic fortune cache on new calculation
+
+                    resetButton.classList.remove('hidden'); // Show reset button after results
+                    chatbotSection.classList.remove('hidden'); // Show chatbot after results
+
+                    console.log("命盤資料已計算並儲存:", userFortuneData); // Debug log
+
+                    // Set initial greeting for chatbot after results are displayed
+                    initializeChatbotGreeting();
+                    chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight; // Scroll initial message into view
+
+                    // Removed the automatic page navigation to 'magicStone'
+                    // showPage('magicStone'); // This line is removed
+                    console.log("已完成命盤計算，停留在我的心靈旅程頁面。"); // Debug log
+
+                } catch (error) {
+                    console.error("占卜計算出錯:", error);
+                    showMessageBox('計算錯誤', '在分析你的命盤時發生錯誤，請稍後再試。');
+                } finally {
+                    loadingIndicator.style.display = 'none';
+                }
+            });
+
+            // Reset button functionality
+            resetButton.addEventListener('click', () => {
+                form.reset(); // Clear form fields
+                numerologyCard.classList.add('hidden');
+                ziweiCard.classList.add('hidden');
+                resetButton.classList.add('hidden');
+                chatbotSection.classList.add('hidden'); // Hide chatbot on reset
+                thematicFortuneSection.style.display = 'none'; // Hide thematic fortune section on reset (on magicStonePage)
+
+                // Reset thematic fortune content on magicStonePage
+                thematicFortuneContents.forEach(contentDiv => {
+                    contentDiv.innerHTML = '<p class="text-center">請先回到「我的心靈旅程」頁面填寫您的命盤資料，即可查看你的運勢。</p>'; // Reset content to placeholder and center it
+                    contentDiv.classList.remove('active'); // Ensure all content is hidden
+                    contentDiv.style.display = 'none'; // Ensure it's hidden
+                });
+                thematicFortuneTabButtons.forEach(button => {
+                    button.classList.remove('active');
+                    button.style.display = 'none'; // Hide buttons on reset
+                });
+                // Show the first tab content with placeholder and activate its button
+                document.getElementById('loveFortuneContent').classList.add('active');
+                document.getElementById('loveFortuneContent').style.display = 'block';
+                thematicFortuneTabButtons[0].classList.add('active');
+
+
+                initializeChatbotGreeting(); // Reset chat messages with initial greeting
+                userFortuneData = {}; // Clear fortune data
+                thematicFortuneCache = {}; // Clear thematic fortune cache
+                showPage('start'); // Go back to the start page after reset
+                console.log("網站已重置並回到我的心靈旅程頁面。"); // Debug log
+            });
+
+            // --- Thematic Fortune Logic ---
+            thematicFortuneTabButtons.forEach(button => {
+                button.addEventListener('click', async () => {
+                    const theme = button.dataset.theme;
+                    console.log(`點擊主題占卜按鈕: ${theme}`); // Debug log
+                    await showThematicFortune(theme);
+                });
+            });
+
+            async function showThematicFortune(theme) {
+                // Deactivate all tab buttons and content areas
+                thematicFortuneTabButtons.forEach(btn => btn.classList.remove('active'));
+                thematicFortuneContents.forEach(contentDiv => {
+                    contentDiv.classList.remove('active');
+                    contentDiv.style.display = 'none'; // Ensure all are hidden
+                });
+
+                // Activate the clicked tab button and its corresponding content area
+                const activeTabButton = document.querySelector(`.thematic-fortune-tab-button[data-theme="${theme}"]`);
+                const activeContentDiv = document.getElementById(`${theme}FortuneContent`);
+
+                if (activeTabButton) activeTabButton.classList.add('active');
+                if (activeContentDiv) {
+                    activeContentDiv.classList.add('active');
+                    activeContentDiv.style.display = 'block'; // Show the active content div
+                }
+                console.log(`主題 ${theme} 的按鈕和內容已設定為活躍狀態。`); // Debug log
+
+                // Check if fortune data is available
+                if (Object.keys(userFortuneData).length === 0) { // Check if userFortuneData is empty
+                    // If no data, ensure content is placeholder and buttons are hidden
+                    thematicFortuneTabButtons.forEach(btn => btn.style.display = 'none');
+                    activeContentDiv.innerHTML = '<p class="text-center">請先回到「我的心靈旅程」頁面填寫您的命盤資料，即可查看你的運勢。</p>'; // Ensure placeholder is centered
+                    console.warn("缺少命盤資料，無法生成主題運勢。"); // Debug log
+                    return;
+                } else {
+                    // If data exists, ensure buttons are visible (handled by showPage or here)
+                    thematicFortuneTabButtons.forEach(btn => btn.style.display = 'block');
+                }
+
+
+                // Check cache first
+                if (thematicFortuneCache[theme]) {
+                    activeContentDiv.innerHTML = thematicFortuneCache[theme];
+                    console.log(`主題 ${theme} 的內容已從快取載入。`); // Debug log
+                    return;
+                }
+
+                thematicLoading.style.display = 'block'; // Show thematic loading indicator
+                activeContentDiv.innerHTML = ''; // Clear previous content
+                console.log(`正在為主題 ${theme} 請求 AI 解析...`); // Debug log
+
+                let prompt = `
+                你是一個溫柔、安靜、陪伴式的命理 Chatbot，你的名字是「星星」。品牌名稱是「心靈旅程」。
+                你的任務是根據使用者的命格特質，提供個人化建議與解析。
+                回答內容需根據命格特質調整，避免泛泛而談。
+                **請在回答中強調使用者的生命靈數主命數、紫微斗數主星和命宮所代表的特質，但不要直接提及「生命靈數主命數」、「紫微斗數主星」、「紫微斗數命宮」等術語，而是將這些特質自然地融入建議中。**
+                回答語氣保持溫柔、陪伴、有啟發性，不誇張不神秘。
+                回答長度適中，能讓使用者感覺像在與一位知心朋友聊天。
+                避免命運絕對論，強調「建議」與「陪伴」的態度。
+                請在回答中多使用一些溫暖、友善的emoji，例如：✨🌸💖🌟😊💡🌱。
+                **請將回答分段，使用空行隔開，讓內容更舒服、好閱讀，避免使用符號（如 '*'）來分段。**
+                **如果需要列點，請使用 Markdown 的列點符號（例如：'- 項目' 或 '* 項目'），並確保每個列點之間有空行。**
+                **每則建議請控制在 100-150 字之間。**
+
+                以下是使用者的命格資料：
+                姓名: ${userFortuneData.name || '未提供'}
+                出生日期: ${userFortuneData.birthDate}
+                出生時間: ${userFortuneData.birthTime}
+                性別: ${userFortuneData.gender === 'male' ? '男' : '女'}
+                生命靈數主命數: ${userFortuneData.lifepath_number} - ${userFortuneData.lifepath_description}
+                紫微斗數主星: ${userFortuneData.ziwei_main_star}
+                紫微斗數命宮: ${userFortuneData.ziwei_minggong}
+                紫微斗數簡介: ${userFortuneData.ziwei_description}
+                `;
+
+                const currentDate = new Date();
+                const currentYear = currentDate.getFullYear();
+                const currentMonth = currentDate.getMonth() + 1; // Month is 0-indexed
+                const currentDay = currentDate.getDate();
+                const currentWeekDay = currentDate.getDay(); // 0 for Sunday, 1 for Monday, etc.
+
+                switch (theme) {
+                    case 'love':
+                        prompt += `\n現在請針對使用者的「感情運勢」提供簡短分析和提示語。\n分析內容可包含：桃花運指數、近期吸引力特質、情感模式提醒。請特別結合使用者的生命靈數主命數（特別是2、6、7號人）、紫微斗數中的夫妻宮主星與流年作用來提供建議。請在開頭包含一個簡單的桃花運指數，例如：「桃花運指數：★★★☆☆」。`;
+                        break;
+                    case 'career':
+                        const userAge = currentYear - new Date(userFortuneData.birthDate).getFullYear();
+                        if (userAge < 25) { // Simplified age check for student vs professional
+                            prompt += `\n現在請針對使用者的「學業運勢」提供簡短分析和提示語。\n分析內容請偏重學習與考試專注力、學習方法建議。`;
+                        } else {
+                            prompt += `\n現在請針對使用者的「事業運勢」提供簡短分析和提示語。\n分析內容請偏重人際策略、能量分配、職場發展建議。`;
+                        }
+                        prompt += `\n請依照命盤五行（根據紫微斗數主星和命宮簡化判斷）、宮位特質提供建議。請在開頭包含一個簡單的事業／學業能量指數，例如：「事業／學業能量：★★★★☆」。`;
+                        break;
+                    case 'family':
+                        prompt += `\n現在請針對使用者的「家庭關係」提供簡短分析和提示語。\n分析內容請以命盤中的關係宮（如兄弟、夫妻、父母等，請根據紫微斗數命宮和主星簡化推斷，或以生命靈數特質推斷）做出簡化詮釋。\n建議語風格溫和、引導反思即可，不斷言吉凶。請在開頭包含一個簡單的家庭和諧指數，例如：「家庭和諧指數：★★★★☆」。`;
+                        break;
+                    case 'overall':
+                        prompt += `\n現在請針對使用者當前時間（${currentYear}年${currentMonth}月${currentDay}日，星期${['日', '一', '二', '三', '四', '五', '六'][currentWeekDay]}）的「綜合運勢」提供簡短分析和提示語。\n分析內容可包含總體狀態建議，例如「行動力上升／需多休息」。請結合命盤資料和當週（或當月）流日、流年資料（請模擬流日流年對命盤的影響）。請在開頭包含一個簡單的整體運勢指數，例如：「整體運勢：★★★☆☆」。`;
+                        break;
+                }
+
+                try {
+                    // Call Gemini 2.0 Flash API
+                    let chatHistory = [];
+                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                    const payload = { contents: chatHistory };
+                    const apiKey = ""; // If you want to use models other than gemini-2.0-flash or imagen-3.0-generate-002, provide an API key here. Otherwise, leave this as-is.
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+                    let thematicResponseText = "抱歉，目前無法提供該主題的運勢解析。";
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        thematicResponseText = result.candidates[0].content.parts[0].text;
+                        thematicFortuneCache[theme] = thematicResponseText; // Cache the response
+                        console.log(`AI 解析成功，主題 ${theme} 的內容已載入。`); // Debug log
+                    } else {
+                        console.error("LLM response structure unexpected for thematic fortune:", result); // Debug log
+                    }
+                    activeContentDiv.innerHTML = thematicResponseText;
+
+                } catch (error) {
+                    console.error(`Error communicating with Chatbot API for ${theme} fortune:`, error); // Debug log
+                    activeContentDiv.innerHTML = `抱歉，目前無法為您解析${activeTabButton.textContent.split(' ')[0]}，請稍後再試。`;
+                } finally {
+                    thematicLoading.style.display = 'none'; // Hide thematic loading indicator
+                    console.log(`主題 ${theme} 的載入狀態已完成。`); // Debug log
+                }
+            }
+
+
+            // --- Chatbot Logic ---
+            sendMessageBtn.addEventListener('click', async () => {
+                await sendChatMessage();
+            });
+
+            chatInput.addEventListener('keypress', async (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); // Prevent new line in input
+                    await sendChatMessage();
+                }
+            });
+
+            async function sendChatMessage() {
+                const userMessage = chatInput.value.trim();
+                if (!userMessage) {
+                    showMessageBox('輸入空白', '請輸入你的問題。');
+                    return;
+                }
+
+                // Append user message
+                appendMessage(userMessage, 'user');
+                chatInput.value = ''; // Clear input
+                chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight; // Scroll to bottom
+
+                chatbotLoading.style.display = 'block'; // Show loading indicator
+
+                try {
+                    // Construct prompt for LLM
+                    const prompt = `
+                    你是一個溫柔、安靜、陪伴式的命理 Chatbot，你的名字是「星星」。品牌名稱是「心靈旅程」。
+                    你的任務是根據使用者的命格特質，提供個人化建議與解析。
+                    回答內容需根據命格特質調整，避免泛泛而談。
+                    **請在回答中強調使用者的生命靈數主命數、紫微斗數主星和命宮所代表的特質，但不要直接提及「生命靈數主命數」、「紫微斗數主星」、「紫微斗數命宮」等術語，而是將這些特質自然地融入建議中。**
+                    回答語氣保持溫柔、陪伴、有啟發性，不誇張不神秘。
+                    回答長度適中，能讓使用者感覺像在與一位知心朋友聊天。
+                    避免命運絕對論，強調「建議」與「陪伴」的態度。
+                    請在回答中多使用一些溫暖、友善的emoji，例如：✨🌸💖🌟😊💡🌱。
+                    **請將回答分段，使用空行隔開，讓內容更舒服、好閱讀，避免使用符號（如 '*'）來分段。**
+                    **如果需要列點，請使用 Markdown 的列點符號（例如：'- 項目' 或 '* 項目'），並確保每個列點之間有空行。**
+
+                    以下是使用者的命格資料：
+                    姓名: ${userFortuneData.name || '未提供'}
+                    出生日期: ${userFortuneData.birthDate}
+                    出生時間: ${userFortuneData.birthTime}
+                    性別: ${userFortuneData.gender === 'male' ? '男' : '女'}
+                    生命靈數主命數: ${userFortuneData.lifepath_number} - ${userFortuneData.lifepath_description}
+                    紫微斗數主星: ${userFortuneData.ziwei_main_star}
+                    紫微斗數命宮: ${userFortuneData.ziwei_minggong}
+                    紫微斗數簡介: ${userFortuneData.ziwei_description}
+
+                    使用者提問: ${userMessage}
+                    `;
+
+                    // Call Gemini 2.0 Flash API
+                    let chatHistory = [];
+                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                    const payload = { contents: chatHistory };
+                    const apiKey = ""; // If you want to use models other than gemini-2.0-flash or imagen-3.0-generate-002, provide an API key here. Otherwise, leave this as-is.
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+                    let botResponseText = "抱歉，目前無法提供回答。";
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        botResponseText = result.candidates[0].content.parts[0].text;
+                    } else {
+                        console.error("LLM response structure unexpected:", result);
+                    }
+
+                    appendMessage(botResponseText, 'bot');
+                    chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight; // Scroll to bottom again
+                } catch (error) {
+                    console.error("Error communicating with Chatbot API:", error);
+                    appendMessage("抱歉，目前無法與 星星 連線，請稍後再試。", 'bot');
+                } finally {
+                    chatbotLoading.style.display = 'none';
+                }
+            }
+
+            function appendMessage(text, sender) {
+                const messageBubble = document.createElement('div');
+                messageBubble.classList.add('message-bubble');
+                if (sender === 'user') {
+                    messageBubble.classList.add('user-message');
+                } else {
+                    messageBubble.classList.add('bot-message');
+                }
+                // Use innerHTML to render Markdown formatting (paragraphs, lists)
+                // Note: For full Markdown rendering, a dedicated Markdown parser library would be needed.
+                // Here, we rely on pre-wrap and LLM's ability to output basic paragraph/list structures.
+                messageBubble.innerHTML = text;
+                chatMessagesDiv.appendChild(messageBubble);
+                chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight; // Ensure auto-scroll
+            }
+
+            // --- 生命靈數邏輯 (與之前相同) ---
+            function sumDigits(num) {
+                return String(num).split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+            }
+
+            function reduceToSingleDigit(num) {
+                while (num > 9 && num !== 11 && num !== 22 && num !== 33) { // User specified 1-9, so reduce master numbers too.
+                    num = sumDigits(num);
+                }
+                return num;
+            }
+
+            function calculateLifePathNumber(year, month, day) {
+                const sumYear = sumDigits(year);
+                const sumMonth = sumDigits(month);
+                const sumDay = sumDigits(day);
+
+                let totalSum = sumDigits(sumYear + sumMonth + sumDay);
+                return reduceToSingleDigit(totalSum);
+            }
+
+            function getNumerologyDescription(number) {
+                const descriptions = {
+                    1: "主命數為 1 的你，通常具有領導特質，獨立、有決心，喜歡開創和挑戰新事物。你擁有很強的個人意志，但也可能顯得固執或自我中心。",
+                    2: "主命數為 2 的你，溫和、敏感、合作性強，擅長協調與溝通。你是很好的聆聽者和支持者，但有時會過於優柔寡斷或缺乏自信。",
+                    3: "主命數為 3 的你，充滿創意、樂觀、善於表達，擁有藝術天賦和社交魅力。你喜歡成為眾人焦點，但也可能過於浮躁或不切實際。",
+                    4: "主命數為 4 的你，務實、有條理、負責任，是可靠的建設者。你注重穩定和安全，但也可能過於保守或缺乏彈性。",
+                    5: "主命數為 5 的你，熱愛自由、適應力強、喜歡變化和冒險。你充滿好奇心，勇於嘗試新事物，但也可能缺乏紀律或不夠專注。",
+                    6: "主命數為 6 的你，富有愛心、責任感強、樂於奉獻，是家庭和社群的支柱。你追求和諧與平衡，但也可能過於犧牲自我或愛操心。",
+                    7: "主命數為 7 的你，思想深刻、追求真理、具有分析能力和直覺。你喜歡獨處思考，但也可能顯得孤僻或過於批判。",
+                    8: "主命數為 8 的你，擁有卓越的領導力、商業頭腦和實現目標的能力。你追求成功和財富，但也可能過於物質化或權力慾望強。",
+                    9: "主命數為 9 的你，富有同情心、理想主義、具有廣闊的視野和服務人群的精神。你追求大愛和奉獻，但也可能過於理想化或情緒化。"
+                };
+                return descriptions[number] || "無法找到對應的主命數解說。";
+            }
+
+            // --- 紫微斗數簡化邏輯 (與之前相同) ---
+            // 這是一個極度簡化的模擬邏輯，不具備實際紫微斗數的複雜推算規則，僅供娛樂參考。
+            function getSimplifiedZiweiAnalysis(year, month, day, hour, gender) {
+                let lifePalace = "命宮"; // Default
+                let mainStar = "主星"; // Default
+                let description = "紫微斗數的分析結果是基於簡化模擬邏輯，僅供娛樂參考。";
+
+                // 簡化命宮判斷 (基於月份和時辰，非常簡化)
+                const monthHourOffset = (month - 1) * 2 + Math.floor(hour / 2); // 每月2個時辰，簡化處理
+                const palaces = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
+                lifePalace = palaces[monthHourOffset % 12] + "宮";
+
+                // 簡化主星判斷 (基於出生年份的最後一位數字和性別，純粹模擬)
+                const lastDigitOfYear = year % 10;
+                let starIndex = (lastDigitOfYear + (gender === 'male' ? 0 : 5)) % 12; // 簡單偏移
+                const mainStars = [
+                    "紫微星", "天府星", "太陽星", "武曲星",
+                    "天同星", "廉貞星", "天相星", "巨門星",
+                    "天梁星", "七殺星", "破軍星", "貪狼星"
+                ];
+                mainStar = mainStars[starIndex];
+
+                // 簡化主星描述 (與主星對應，但內容為通用型)
+                const starDescriptions = {
+                    "紫微星": "你可能具有領導潛質，重視尊嚴，有王者風範。",
+                    "天府星": "你可能性格穩重，善於理財，有包容力。",
+                    "太陽星": "你可能熱情開朗，樂於助人，有服務精神。",
+                    "武曲星": "你可能堅毅果斷，有執行力，財運方面有潛力。",
+                    "天同星": "你可能溫和善良，性情隨和，喜歡享樂。",
+                    "廉貞星": "你可能剛毅果決，有原則，但也可能帶有叛逆性。",
+                    "天相星": "你可能溫文儒雅，注重儀表，樂於助人。",
+                    "巨門星": "你可能口才出眾，善於分析，但也可能多疑。",
+                    "天梁星": "你可能成熟穩重，樂於施恩，有解厄消災之能力。",
+                    "七殺星": "你可能獨立性強，敢於開創，有冒險精神。",
+                    "破軍星": "你可能變動性大，敢於破舊立新，不拘小節。",
+                    "貪狼星": "你可能多才多藝，善於交際，對慾望有較強追求。"
+                };
+                description = starDescriptions[mainStar] || description;
+
+                return {
+                    lifePalace: lifePalace,
+                    mainStar: mainStar,
+                    description: description
+                };
+            }
+        });
+    </script>
+</body>
+</html>
